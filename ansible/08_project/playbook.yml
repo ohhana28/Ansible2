@@ -1,0 +1,32 @@
+---
+- name: 웹 서버 설정 + 테스트
+  hosts: webservers
+  gather_facts: yes
+  tasks:
+    - name: 방화벽 서비스 설정 
+      import_tasks: tasks/firewall.yml
+      vars:
+        firewall_pkg: firewalld 
+        firewall_svc: firewalld
+        rule:
+          - http
+          - https
+
+    - name: 웹 서비스 설정
+      include_tasks: tasks/environment.yml
+      vars:
+        packages:
+          - httpd
+          - mod_ssl
+        service: httpd.service
+      when: ansible_distribution == 'CentOS'
+
+    - name: 웹 페이지 만들기
+      import_tasks: tasks/placeholder.yml
+      vars:
+        file: /var/www/html/index.html
+
+- name: 웹페이지 테스트
+  import_playbook: plays/test.yml
+  vars:
+    url: "http://ansible1.example.com"

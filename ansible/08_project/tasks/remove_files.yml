@@ -1,0 +1,5 @@
+- name: 여러개의 파일 지우기
+  file: 
+    path: "{{ item }}"
+    state: absent
+  with_items: "{{ files }}"

@@ -1,0 +1,22 @@
+---
+- name: DB 패키지 설치 및 이동
+  hosts: database_dev
+  vars:
+    pkg_db:
+      - mariadb-server
+      - python3-PyMySQL
+  tasks:
+    # 패키지 설치 - mariadb-server, python3-PyMySQL
+    - name: 패키지 설치
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ pkg_db }}"
+      when: ansible_distribution == 'RedHat'
+
+    # DB 서비스 기동 - mariadb.service
+    - name: DB 서비스 기동
+      service:
+        name: mariadb
+        state: started
+        enabled: true

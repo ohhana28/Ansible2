@@ -1,0 +1,27 @@
+---
+- name: Restore playbook.yml
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: 파일 여러개 지우기 
+      include_tasks: tasks/remove_files.yml
+      vars:
+        files: 
+          - /var/www/html/index.html
+          - /home/ansible/test.txt
+          - /home/ansible/dir1
+
+    - name: 여러개의 패키지 삭제하기
+      include_tasks: tasks/remove_packages.yml
+      vars:
+        packages:
+          - httpd
+          - mod_ssl
+      when: ansible_distribution == "CentOS" or ansible_distribution == 'RedHat' or ansible_distribution == 'Fedora'
+
+    - name: 방화벽에서 여러 포트 닫기
+      include_tasks: tasks/remove_fw_services.yml
+      vars:
+        services:
+          - http
+          - https 

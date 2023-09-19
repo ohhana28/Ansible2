@@ -1,0 +1,19 @@
+---
+- name: 방화벽 패키지 설치 - {{ firewall_pkg }}
+  yum:
+    name: "{{ firewall_pkg }}"
+    state: latest
+
+- name: 방화벽 서비스 기동 - {{ firewall_svc }}
+  service:
+    name: "{{ firewall_svc }}"
+    state: started
+    enabled: true
+
+- name: 방화벽 웹포트 등록 - {{ rule }}
+  firewalld:
+    service: {{ item }}
+    parmanent: yes
+    state: enabled
+    immediate: yes
+  loop: "{{ rule }}"

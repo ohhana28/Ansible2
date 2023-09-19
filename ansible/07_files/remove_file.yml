@@ -1,0 +1,9 @@
+---
+- name: 파일 삭제 예제
+  hosts: all 
+  gather_facts: no 
+  tasks:
+    - name: 파일 삭제 예제 - /home/devops/user.txt
+      file:
+        path: /home/devops/user.txt
+        state: present 

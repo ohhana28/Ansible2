@@ -1,0 +1,6 @@
+---
+# handlers file for myfirewall
+- name: restart firewall 
+  firewall:  
+    name: firewalld
+    state: enabled

@@ -1,0 +1,17 @@
+---
+- name: 웹-DB 패키지 설치 - {{ ansible_local.custom.packages.db_package }}, {{ ansible_local.custom.packages.web_package }}
+  yum: 
+    name:
+      - "{{ ansible_local.custom.packages.db_package }}"
+      - "{{ ansible_local.custom.packages.web_package }}"
+    state: latest
+
+- name: DB 서비스 기동
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - "{{ ansible_local.custom.services.db_service }}"
+    - "{{ ansible_local.custom.services.web_service }}" 
+ 

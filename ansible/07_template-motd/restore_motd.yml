@@ -1,0 +1,10 @@
+---
+- name: Restore motd.yml
+  gather_facts: no
+  hosts: all
+  tasks:
+    - name: /etc/motd 내용 비우기
+      shell:
+        cmd: '> /etc/motd'
+      changed_when: false
+      

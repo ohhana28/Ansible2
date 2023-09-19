@@ -1,0 +1,11 @@
+---
+- name: 사용자 추가 예제
+  hosts: web2.example.com
+  vars_files:
+    - secret2.yml
+  tasks:
+    - name: 사용자 추가
+      user:
+        name: "{{ username }}"
+        password: "{{ pwhash | password_hash('sha512') }}"
+        

@@ -1,0 +1,16 @@
+---
+- name: 디렉토리 생성 예제
+  hosts: fileservers
+  tasks:
+    - name: 변수 포함(include)
+      include_vars: paths.yml
+
+    - name: 디렉토리 생성
+      file:
+        path: "{{ paths.fileserver }}"
+        state: directory
+      register: ouput
+    - name: 디버깅
+      debug:
+        var: ouput
+

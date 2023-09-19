@@ -1,0 +1,11 @@
+---
+- name: Restore playbook.yml
+  hosts: databases
+  gather_facts: no 
+  tasks: 
+    - name: MariaDB 삭제
+      yum:
+        name:
+          - mariadb-server
+          - python3-PyMySQL
+        state: absent 

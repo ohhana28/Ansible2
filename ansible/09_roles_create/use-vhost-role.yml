@@ -1,0 +1,29 @@
+---
+- name: 역할을 사용하는 가상 웹 서버 설정 
+  hosts: webservers
+  vars:
+    url: "https://github.com/ohhana28/testsource.git"
+  gather_facts: yes
+  
+  pre_tasks:
+    - name: ==== 역할 시작 =====
+      debug:
+        msg: '===== [역할 시작 부분] ====='
+  
+  roles:
+    - myvhost
+
+  post_tasks:
+    - name: 
+      yum:
+        name: git
+        state: present
+
+    - name: 소스 코드 받아 오기
+      git: 
+        repo: "{{ url }}"
+        dest: /var/www/vhosts/{{ ansible_hostname }}
+
+    - name: ==== 역할 끝 =====
+      debug:
+        msg: '===== [역할 끝 부분] ====='

@@ -1,0 +1,5 @@
+- name: 여러개의 패키지 삭제 - 
+  yum: 
+    name: "{{ packages }}"
+    state: absent
+    

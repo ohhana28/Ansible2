@@ -1,0 +1,45 @@
+---
+- name: DB 설치 및 서비스 기동
+  hosts: databases
+  tasks:
+    # DB 설치
+    # -> DB 암호 설정
+    - name: MariaDB 설치
+      yum:
+        name:
+          - mariadb-server
+          - python3-PyMySQL
+        state: latest
+      notify:
+        - set db password
+
+    # DB 서비스 기동
+    - name: MariaDB 서비스 기동
+      services:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    # 설정 파일 교체(/etc/my.cnf)
+    - name: DB 설정 파일 교체 
+      get_url:
+        url: 'http://192.168.10.10/my.cnf.standard'
+        dest: /etc/my.cnf
+        owner: root
+        group: root
+        mode: '0644'
+        force: yes
+      notify:
+        - restart db service 
+
+    # handler 구현
+    handlers:
+      - name: set db password 
+        mysql_user:
+          name: root
+          password: soldesk1.
+
+      - name: restart db service 
+        service:
+          name: mariadb
+          state: restarted 

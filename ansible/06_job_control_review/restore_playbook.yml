@@ -1,0 +1,21 @@
+---
+- name: Restore playbook.yml
+  hosts: all
+  vars_files: vars.yml
+  tasks:
+    # 방화벽 포트 제거 
+    - name: 방화벽 포트 닫기
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        state: disabled
+        immediate: yes
+      with_items: "{{ fw_port }}"
+
+    # 패키지 삭제
+    - name: 패키지 삭제 
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items: "{{ packages }}"
+      

@@ -1,0 +1,5 @@
+---
+- name: 파일 생성 - {{ file }}
+  copy:
+    content: "{{ ansible_facts['fqdn'] }} has been customized using Ansible.\n"
+    dest: "{{ file }}"

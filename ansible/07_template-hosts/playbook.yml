@@ -1,0 +1,12 @@
+---
+- name: 템플릿 파일 배포 예제
+  hosts: all
+  tasks:
+    - name: 템플릿 파일 배포 - /etc/hosts
+      template:
+        src: templates/hosts.j2
+        dest: /root/hosts
+        owner: root
+        group: root
+        mode: '0644'
+        

@@ -1,0 +1,31 @@
+---
+- name: 사용자 추가 예제
+  hosts: all
+  vars_files:
+    - secret2.yml
+  tasks:
+    # 1. 사용자 추가
+    - name: 사용자 추가 - developer, operator
+      user:
+        name: "{{ item.username }}"
+        password: "{{ item.pwhash | password_hash('sha512') }}"
+      with_items: "{{ users }}"
+      changed_when: false
+
+    # 2. /etc/sudoers.d/developer, /etc/sudoers.d/operator
+    - name: 파일 배포 - /etc/sudoers.d/dev-op
+      copy:
+        src: files/dev-op
+        dest: /etc/sudoers.d/dev-op
+        owner: root
+        group: root
+        mode: '0440'
+
+    # 3. $HOME/.ssh/id_rsa.pub -> $HOME/.ssh/authorized_keys
+    - name: 키 파일(pubkey) 배포 - ~/.ssh/authorized_keys
+      authorized_key: 
+        user: "{{ item.username }}"
+        state: present
+        key: "{{ lookup('file','/home/ansible/.ssh/id_rsa.pub') }}"
+      with_items: "{{ users }}"
+      

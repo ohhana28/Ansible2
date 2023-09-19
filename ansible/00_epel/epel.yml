@@ -1,0 +1,6 @@
+---
+- name: epel-release 패키지 설치
+  hosts: all
+  tasks:
+    -name: epel-release 패키지 설치
+      

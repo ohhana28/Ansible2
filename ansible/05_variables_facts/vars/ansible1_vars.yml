@@ -1,0 +1,13 @@
+pkg_http: httpd
+pkg_https: mod_ssl 
+file_httpconf_src: files/httpd.conf
+file_httpconf_dest: /etc/httpd/conf/httpd.conf
+file_htaccess_src: files/.htaccess
+file_htaccess_dest: /var/www/html/.htaccess
+dir_secret: /etc/httpd/secret
+file_secret_src: files/htpasswd
+file_secret_dest: "{{ dir_secret }}/htpasswd"
+file_index: /var/www/html/index.html
+svc_web: httpd.service
+fw_http: http
+fw_https: https

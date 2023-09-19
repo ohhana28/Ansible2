@@ -1,0 +1,20 @@
+---
+- name: Restore_playbook.yml
+  hosts: all
+  vars:
+    db_packages:
+      - mariadb-server
+      - python3-PyMySQL
+  tasks:
+    # 패키지 삭제 - mariadb-server, python3-PyMySQL
+    - name: 패키지 삭제 
+      yum: 
+        name: "{{ item }}"
+        state: absent
+      with_items: "{{ db_packages }}"
+
+    # /etc/motd 파일 내용 비우기
+    - name: /etc/motd 파일 내용 비우기
+      shell:
+        cmd: "> /etc/motd"
+      changed_when: false

@@ -1,0 +1,39 @@
+---
+- name: remove and stop Web Service
+  hosts: webservers
+  tasks:
+  # firewall-cmd --permanent --remove-service={http,https}
+  # firewall-cmd --reload
+  - name: configure firewalld
+    firewalld:
+      service: "{{ item }}"
+      zone: public
+      permanent: yes
+      immediate: yes
+      state: disabled
+    loop:
+      - http
+      - https
+
+  # rm -f /var/www/html/index.html
+  - name: remove file - /var/www/html/index.html
+    file:
+      path: /var/www/html/index.html
+      state: absent
+
+  # systemctl disable --now httpd
+  - name: down the service - httpd
+    service:
+      name: httpd
+      state: stopped
+      enabled: no
+    ignore_errors: yes
+
+  # yum -y remove httpd mod_ssl
+  - name: remove packages - httpd, mod_ssl
+    yum:
+      name:
+        - httpd
+        - mod_ssl
+      state: absent
+      

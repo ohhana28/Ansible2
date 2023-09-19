@@ -1,0 +1,31 @@
+---
+# tasks file for myfirewall
+# 1. 방화벽 패키지 설치
+# 2. 방화벽 서비스 기동
+# 3. 방화벽 포트(서비스) 등록
+
+# 1. 방화벽 패키지 설치 - firewalld, firewall-config
+- name: 방화벽 패키지 설치
+  yum:
+    name:
+      - firewalld 
+      - firewall-config
+    state: present
+
+# 2. 방화벽 서비스 기동 - firewalld
+- name: 방화벽 서비스 기동
+  service: 
+    name: firewalld
+    state: started
+    enabled: true
+
+# 3. 방화벽 포트(서비스) 등록 - http(변수)
+- name: 방화벽 서비스(포트) 등록 - http(변수)
+  firewalld:
+    service: "{{ firewall_service }}"
+    permanent: yes
+    state: enabled
+  changed_when: true 
+  notify: 
+    - restart firewall 
+

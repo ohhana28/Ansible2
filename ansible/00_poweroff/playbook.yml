@@ -1,0 +1,21 @@
+---
+- name: 시스템 셧다운
+  hosts: all
+  gather_facts: no
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: 앤서블 관리 대상 호스트 셧다운
+      command: /sbin/shuntdown -h now
+      ignore_errors: yes
+
+- name: 로컬 서버 셧다운
+  hosts: localhost
+  gather_facts: no
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: 앤서블 제어 노드 셧다운
+      command: /sbin/shutdown -h +1 mins

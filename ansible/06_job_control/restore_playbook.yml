@@ -1,0 +1,11 @@
+---
+- name: Restore playbook.yml
+  hosts: all
+  tasks:
+    - name: 패키지 삭제
+      yum:
+        name:
+          - httpd
+          - mariadb-server
+        state: absent
+        

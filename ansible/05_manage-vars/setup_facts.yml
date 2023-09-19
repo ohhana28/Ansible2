@@ -1,0 +1,21 @@
+---
+- name: 사용자 정의 팩트 배포
+  hosts: web1
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    file_fact_src: files/custom.fact
+    file_fact_dest: "{{ remote_dir }}/custom.fact"
+  tasks:
+    # /etc/ansible/facts.d/
+    - name: 디렉토리 생성 - "{{ remote_dir }}"
+      file:
+        path: "{{ remote_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: 파일 배포
+      copy: 
+        src: "{{ file_fact_src }}"
+        dest: "{{ file_fact_dest }}"
+
+    

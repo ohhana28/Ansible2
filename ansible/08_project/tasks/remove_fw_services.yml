@@ -1,0 +1,8 @@
+- name: 방화벽 서비스 포트 닫기
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: disabled
+    immediate: yes 
+  with_items: "{{ services }}"
+  

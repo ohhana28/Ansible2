@@ -1,0 +1,108 @@
+---
+- name: 웹서버 설정과 기본 인증 테스트
+  hosts: ansible1.example.com
+  vars_files:
+    - vars/ansible1_vars.yml
+  tasks: 
+    # (1) 패키지 설치 - httpd, mod_ssl
+    # (2) 서비스 설정 
+    #   - /etc/httpd/conf/httpd.conf
+    #   - /var/www/html/.htaccess
+    #   - /etc/httpd/secret/htpasswd
+    # (3) 서비스 기동 - httpd
+    # (4) 방화벽 등록 - http, https
+    # (5) SELinux
+    # (6) Client 확인
+
+    # (1) 패키지 설치 - {{ pkg_http }}, {{ pkg_https }}
+    - name: 패키지 설치 - {{ pkg_http }}, {{ pkg_https }}
+      yum: 
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - "{{ pkg_http }}"
+          - "{{ pkg_https }}"
+
+    # (2) 서비스 설정 
+    #   - /etc/httpd/conf/httpd.conf
+    - name: 파일 배포 - {{ file_httpconf_dest }}
+      copy: 
+        src: "{{ file_httpconf_src }}"
+        dest: "{{ file_httpconf_dest }}"
+    #   - /var/www/html/.htaccess
+    - name: 파일 배포 - {{ file_htaccess_dest }}
+      copy:
+        src: "{{ file_htaccess_src }}"
+        dest: "{{ file_htaccess_dest }}"
+        owner: apache
+        group: apache
+        mode: '0400'     
+    #   - /etc/httpd/secret/htpasswd
+    - name: 디렉토리 생성 - {{ dir_secret }}
+      file: 
+        path: "{{ dir_secret }}"
+        state: directory
+        mode: '0755'
+
+    - name: 파일 배포 - {{ file_secret_dest }}
+      copy:
+        src: "{{ file_secret_src }}"
+        dest: "{{ file_secret_dest }}"
+        owner: apache
+        group: apache
+        mode:'0400'
+
+    - name: 파일 SELINUX 설정 - {{ dir_secret }}(/.*)?
+      sefcontext:
+        target: "{{ dir_secret }}(/.*)?"
+        setype: httpd_config_t
+        state: present
+
+    - name: SELINUX 적용
+      command: restorecon -irv "{{ dir_secret }}"
+
+    #   - /var/www/html/index.html
+    - name: 파일 생성 - {{ file_index }}
+      copy:
+        content: '<h1> My Web Page </h1>'
+        dest: "{{ file_index }}"
+
+    # (3) 서비스 기동 - httpd.service
+    - name: 서비스 기동 - {{ svc_web }}
+      service:
+        name: "{{ svc_web }}"
+        state: restarted
+        enabled: yes
+
+    # (4) 방화벽 등록 - http, https
+    - name: 방화벽 등록 - {{ fw_http }}, {{ fw_https }}
+      firewalld:
+        service: "{{ item }}"
+        permanent: true
+        state: enabled
+        immediate: yes
+      loop:
+        - "{{ fw_http }}"
+        - "{{ fw_https }}"
+
+# (5) Client 확인
+- name: 웹 서버 인증 확인
+  hosts: localhost
+  become: no
+  vars_files:
+    - vars/localhost_secret.yml
+  tasks:
+    - name: 웹 서버 연결(인증) 테스트
+      uri: 
+        url: http://ansible1.example.com
+        force_basic_auth: true
+        validate_certs: false
+        user: "{{ webuser }}"
+        password: "{{ webpass }}"
+        return_content: true
+        status_code: 200
+      register: output
+    - name: 결과 확인
+      debug:
+        var: output
+        
