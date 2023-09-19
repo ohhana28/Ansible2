@@ -1,0 +1,36 @@
+---
+- name: 웹 콘텐츠 제작
+  hosts: webservers
+  gather_facts: no 
+  tasks:
+    # /webdev 디렉토리 생성 - apache:apache, mode: 2775
+    - name: 웹 디렉토리 생성 - /webdev
+      file:
+        path: /webdev
+        state: directory
+        owner: apache
+        group: apache
+        mode: '2775'
+
+    # SELinux 설정 - httpd_sys_content_t
+    - name: SELinux 설정
+      sefcontext:
+        target: '/web(/.*)?'
+        setype: httpd_sys_content_t
+        state: present
+
+    - name: SELinux 적용
+      command: restorecon -irv /webdev 
+
+    # 링크생성 - /var/www/html/webdev -- symlink --> /webdev
+    - name: 디렉토리 심볼릭 링크 생성
+      file:
+        src: /webdev
+        dest: /var/www/html/webdev
+        state: link
+
+    # index.html 파일 생성- /webdev/index.html
+    - name: 웹 파일 생성
+      copy:
+        content: 'WEBSERVERS\n'
+        dest: /webdev/index.html
