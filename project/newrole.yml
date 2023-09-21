@@ -1,5 +1,0 @@
----
-- name: Aapache Web servers role
-  hosts: webservers
-  roles:
-    - apache
